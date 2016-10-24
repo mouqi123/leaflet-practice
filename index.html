@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css">
+    <style type="text/css">
+    body {
+        padding: 0;
+        margin: 0;
+    }
+    
+    html,
+    body,
+    #map {
+        height: 100%;
+    }
+    </style>
+    <script type="text/javascript" src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
+	<!-- 你提供的那个url获取不到地图，我在网上重新找了个地图源 -->
+    <script type="text/javascript" src='leaflet.ChineseTmsProviders.js'></script>
+</head>
+
+<body>
+    <div id='map'></div>
+</body>
+<script type="text/javascript">
+var normalm = L.tileLayer.chinaProvider('TianDiTu.Normal.Map', {
+        maxZoom: 18,
+        minZoom: 5
+    }),
+    normala = L.tileLayer.chinaProvider('TianDiTu.Normal.Annotion', {
+        maxZoom: 18,
+        minZoom: 5
+    }),
+    imgm = L.tileLayer.chinaProvider('TianDiTu.Satellite.Map', {
+        maxZoom: 18,
+        minZoom: 5
+    }),
+    imga = L.tileLayer.chinaProvider('TianDiTu.Satellite.Annotion', {
+        maxZoom: 18,
+        minZoom: 5
+    });
+
+var normal = L.layerGroup([normalm, normala]),
+    image = L.layerGroup([imgm, imga]);
+
+var baseLayers = {
+    "地图": normal,
+    "影像": image,
+}
+
+var overlayLayers = {
+
+}
+
+var map = L.map("map", {
+    center: [39.91, 116.40],
+    zoom: 12,
+    layers: [normal],
+    zoomControl: false
+});
+
+// set scale on top-right position.
+L.control.scale({ position: 'topright'}).addTo(map); 
+
+// 这里设置了地图图层和影像图层，通过按钮可以切换.
+L.control.layers(baseLayers, overlayLayers).addTo(map);
+
+// zoom default position is leftright.
+L.control.zoom({
+    zoomInTitle: '放大',
+    zoomOutTitle: '缩小'
+}).addTo(map);
+
+//默认双击会缩放地图，所以要在此处禁止双击缩放.
+map.doubleClickZoom.disable(); 
+
+//双击时设置marker
+map.on('dblclick', function(e){
+	var marker = new L.marker(e.latlng).bindPopup("You clicked the map at "+e.latlng.toString()).openPopup().addTo(map);
+});
+//也可以直接双击弹出，不设置marker
+/**
+ * var popup = new L.popup();  
+ * function onMapdblClick(e) {
+ *   popup.setLatLng(e.latlng).setContent("You clicked the map at " + e.latlng.toString()).openOn(map);  
+ * }  
+ * map.on('dblclick', onMapdblClick); 
+**/
+</script>
+
+</html>
